@@ -1,0 +1,121 @@
+#!/bin/sh
+
+function usage {
+    echo "usage: resignipa [-i ipa -p  profile -c codesignIdentity [ -v bundleVersion | -l plist | -b bundleId | -o outfile]] | [-h]"
+    echo "   ";
+    echo "  -i | --ipa                  : The path to the original ipa file to be resigned";
+    echo "  -p | --profile              : The path to the provisioning profile";
+    echo "  -c | --codesignIdentity     : The identiy/name of the signing certifiate installed in keychain";
+    echo "  -v | --bundleVersion        : Optional, A verison to assign to CFBundleVersion";
+    echo "  -l | --plist                : Optional, Name of the plist file to edit. Default is Info.plist";
+    echo "  -b | --bundleId             : Optional, New bundle ID to chagne to";
+    echo "  -o | --outfile              : Optional, Name of exported ipa, default is orignalFile_resigned.ipa";
+    echo "  -h | --help                 : Optional, this message";
+}
+
+plist="Info.plist";
+outfile="";
+
+while [ "$1" != "" ]; do
+    case "$1" in
+        -i | --ipa )           		shift
+                                	ipa="$1"
+                                	;;
+        -p | --profile )        	shift
+                                	profile="$1"
+                                	;;
+        -c | --codesignIdentity )   shift
+        							codesignIdentity="$1"
+        							;;
+		-v | --bundleVersion)   	shift
+        							bundleVersion="$1"
+        							;;
+        -l | --plist)               shift
+                                    plist="$1"
+                                    ;;
+        -b | --bundleId)            shift
+                                    bundleId="$1"
+                                    ;;
+        -o | --outfile)             shift
+                                    outfile="$1"
+                                    ;;
+        -h | --help )           	usage
+                                	exit
+                                	;;
+        * )                     	usage
+                                	exit 1
+    esac
+    shift
+done
+
+
+
+if [[ -z "$ipa" || -z "$profile" || -z "$codesignIdentity" ]]; then
+    usage
+    exit;
+fi
+
+
+filename=$(basename "$ipa");
+wdir=$(dirname "$ipa");
+name="${filename%.*}";
+package="/tmp/$name";
+
+
+if [[ -z "$outfile" ]]; then
+    outfile="${name}_resigned.ipa";
+fi
+
+#little work around to resolve the passed in file to a folder location
+#this solved a file path that is just a name  - my.ipa, with no path, this allows us
+#to resolve the dir its in..
+wdir=$(cd $wdir; pwd;)
+
+#abort on error
+set -e
+
+
+
+echo "Extracting package $filename...";
+unzip "$filename" -d "$package";
+
+app=$(find $package/Payload -name "*app");
+
+echo "Removing old signature from $app...";
+rm -r "$app/_CodeSignature" "$app/CodeResources" 2> /dev/null | true;
+
+echo "Adding new profile to $app...";
+cp "$profile" "$app/embedded.mobileprovision";
+
+buildPlist="$app/$plist";
+
+if [[ -z $bundleVersion ]]; then
+   echo "Keeping existing version number...";
+else
+	echo "Change bundle version number to $bundleVersion...";
+	/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $bundleVersion" $buildPlist;
+fi
+
+
+if [[ -z $bundleId ]]; then
+   echo "Keeping existing bundle Id...";
+else
+    echo "Update bundle id to $bundleId..";
+    /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $bundleId" $buildPlist;
+fi
+
+
+echo "Re sign $app...";
+/usr/bin/codesign -f -s "$codesignIdentity" --resource-rules "$app/ResourceRules.plist" "$app";
+
+echo "Re archving app $app to $name_resigned.ipa...";
+cd "$package"; #not sure how to STOP inculding parent folders in the zip path, so cd into the folder first
+echo "${wdir}/${name}_resigned.ipa";
+zip -qr "${wdir}/${outfile}" "Payload";
+
+rm -rf "$package";
+
+echo "Done";
+
+
+
