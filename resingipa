@@ -13,23 +13,25 @@ function usage {
     echo "  -h | --help                 : Optional, this message";
 }
 
+VERSION="0.1";
+
 plist="Info.plist";
 outfile="";
 
 while [ "$1" != "" ]; do
     case "$1" in
-        -i | --ipa )           		shift
-                                	ipa="$1"
-                                	;;
-        -p | --profile )        	shift
-                                	profile="$1"
-                                	;;
+        -i | --ipa )                shift
+                                    ipa="$1"
+                                    ;;
+        -p | --profile )            shift
+                                    profile="$1"
+                                    ;;
         -c | --codesignIdentity )   shift
-        							codesignIdentity="$1"
-        							;;
-		-v | --bundleVersion)   	shift
-        							bundleVersion="$1"
-        							;;
+                                    codesignIdentity="$1"
+                                    ;;
+        -v | --bundleVersion)       shift
+                                    bundleVersion="$1"
+                                    ;;
         -l | --plist)               shift
                                     plist="$1"
                                     ;;
@@ -39,11 +41,11 @@ while [ "$1" != "" ]; do
         -o | --outfile)             shift
                                     outfile="$1"
                                     ;;
-        -h | --help )           	usage
-                                	exit
-                                	;;
-        * )                     	usage
-                                	exit 1
+        -h | --help )               usage
+                                    exit
+                                    ;;
+        * )                         usage
+                                    exit 1
     esac
     shift
 done
@@ -75,9 +77,8 @@ wdir=$(cd $wdir; pwd;)
 set -e
 
 
-
-echo "Extracting package $filename...";
-unzip "$filename" -d "$package";
+echo "Extracting package $ipa...";
+unzip "$ipa" -d "$package";
 
 app=$(find $package/Payload -name "*app");
 
@@ -92,8 +93,8 @@ buildPlist="$app/$plist";
 if [[ -z $bundleVersion ]]; then
    echo "Keeping existing version number...";
 else
-	echo "Change bundle version number to $bundleVersion...";
-	/usr/libexec/PlistBuddy -c "Set :CFBundleVersion $bundleVersion" $buildPlist;
+    echo "Change bundle version number to $bundleVersion...";
+    /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $bundleVersion" $buildPlist;
 fi
 
 
@@ -115,7 +116,8 @@ zip -qr "${wdir}/${outfile}" "Payload";
 
 rm -rf "$package";
 
-echo "Done";
+echo " ";
+echo "New IPA is available at ${wdir}/${outfile}";
 
 
 
