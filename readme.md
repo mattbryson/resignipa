@@ -10,7 +10,9 @@ Usage
 =======
 
 1) Copy the `resignipa` script to you mac. You could add it to your path if you use it alot.
+
 2) Make it executable `$ chmod +x resignipa`
+
 3) Run it for usage `./resignipa --help`
 
     usage: resignipa [ipa_file provisioning_profile codesign_identity_name [bundle_version]] | [-h]
