@@ -5,6 +5,8 @@ resignipa digitally re-signs existing .ipa bundles with Apple distribtuion certi
 
 This tool is useful when the person signing and deploying the .ipa may not be the developer.  It is also very useful for re-signing Enterprise applications when the provisioning profile expires - you dont need to re compile the appliciton.
 
+You can update pre defined Plist poperties, such as *CFBundleDisplayName*, *CFBundleIdentifier*, *CFBundleVersion* as well as defining any other key values that you want to update in your plist.
+
 
 Usage
 =======
@@ -15,16 +17,18 @@ Usage
 
 3) Run it for usage `./resignipa --help`
 
-    usage: resignipa [ipa_file provisioning_profile codesign_identity_name [bundle_version]] | [-h]
+    usage: resignipa [-i ipa -p  profile -c codesignIdentity [ -v bundleVersion | -b bundleId | -n bundleDisplayName | -k keyValuePairs  | -l plist | -o outfile]] | [-h]
 
-      -i | --ipa                  : The path to the original ipa file to be resigned
-      -p | --profile              : The path to the provisioning profile
-      -c | --codesignIdentity     : The identiy/name of the signing certifiate installed in keychain
-      -v | --bundleVersion        : Optional, A verison to assign to CFBundleVersion
-      -l | --plist                : Optional, Name of the plist file to edit. Default is Info.plist
-      -b | --bundleId             : Optional, New bundle ID to chagne to
-      -o | --outfile              : Optional, Name of exported ipa, default is orignalFile_resigned.ipa
-      -h | --help                 : Optional, this message
+    -i | --ipa                  : The path to the original ipa file to be resigned
+    -p | --profile              : The path to the provisioning profile
+    -c | --codesignIdentity     : The identiy/name of the signing certifiate installed in keychain
+    -v | --bundleVersion        : Optional, A verison to assign to CFBundleVersion
+    -b | --bundleId             : Optional, New bundle ID
+    -n | --bundleDisplayName    : Optional, New bundle display name
+    -k | --keyValuePairs        : Optional, a comma delimted list of extra keys to update in the plist : -k "Foo=123456789, Bar=abcdefg, CFBundleDisplayName=ANF AmB EAME"
+    -l | --plist                : Optional, Name of the plist file to edit. Default is Info.plist
+    -o | --outfile              : Optional, Name of exported ipa, default is orignalFile_resigned.ipa
+    -h | --help                 : Optional, this message
 
 
 It will output a resigned IPA file in the same dir as the origin file.
@@ -38,6 +42,10 @@ Resign with new bundle id:
 
     /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -b "my.new.bundle.id"
 
+Resign with new bundle display name:
+
+    /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -n "My New name"
+
 Resign with new version, where app has a custom plist:
 
     /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -v "1.9" -p "custom.plist"
@@ -46,6 +54,11 @@ Resign and set name of new app:
 
     /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -o "my_new_app.ipa"
 
+Resign with other key values to set in the Plist:
+ 
+    /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -k "MyCustomKey=my value, MyOtherKey=12, CFBundleDisplayName=A new name"
+
+The above list of Key valu pairs to update in the Plist will run after the other arguments, so setting *CFBundleDisplayName* **AND** *-n* flag, -k settings will take precidence.
 
 License
 =======
