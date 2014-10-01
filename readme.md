@@ -35,30 +35,30 @@ It will output a resigned IPA file in the same dir as the origin file.
 
 Resign with new provisioning profile:
 
-    /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd"
+    ./resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd"
 
 
 Resign with new bundle id:
 
-    /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -b "my.new.bundle.id"
+    ./resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -b "my.new.bundle.id"
 
 Resign with new bundle display name:
 
-    /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -n "My New name"
+    ./resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -n "My New name"
 
 Resign with new version, where app has a custom plist:
 
-    /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -v "1.9" -p "custom.plist"
+    ./resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -v "1.9" -p "custom.plist"
 
 Resign and set name of new app:
 
-    /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -o "my_new_app.ipa"
+    ./resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -o "my_new_app.ipa"
 
 Resign with other key values to set in the Plist:
  
-    /resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -k "MyCustomKey=my value, MyOtherKey=12, CFBundleDisplayName=A new name"
+    ./resingipa -i test.ipa -p com_domain_app.mobileprovision -c "iPhone Distribution: ACME Ltd" -k "MyCustomKey=my value, MyOtherKey=12, CFBundleDisplayName=A new name"
 
-The above list of Key valu pairs to update in the Plist will run after the other arguments, so setting *CFBundleDisplayName* **AND** *-n* flag, -k settings will take precidence.
+Keys set in the *-k* parameter take precedence over the other settings.
 
 License
 =======
