@@ -25,7 +25,7 @@ Usage
     -v | --bundleVersion        : Optional, A verison to assign to CFBundleVersion
     -b | --bundleId             : Optional, New bundle ID
     -n | --bundleDisplayName    : Optional, New bundle display name
-    -k | --keyValuePairs        : Optional, a comma delimted list of extra keys to update in the plist : -k "Foo=123456789, Bar=abcdefg, CFBundleDisplayName=ANF AmB EAME"
+    -k | --keyValuePairs        : Optional, a comma delimted list of extra keys to update in the plist : -k "Foo=123456789, Bar=abcdefg, CFBundleDisplayName=My Name"
     -l | --plist                : Optional, Name of the plist file to edit. Default is Info.plist
     -o | --outfile              : Optional, Name of exported ipa, default is orignalFile_resigned.ipa
     -h | --help                 : Optional, this message
