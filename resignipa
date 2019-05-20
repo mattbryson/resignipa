@@ -149,7 +149,11 @@ echo "Re sign $app...";
 echo "Re archving app $app to $name_resigned.ipa...";
 cd "$package"; #not sure how to STOP inculding parent folders in the zip path, so cd into the folder first
 echo "${wdir}/${name}_resigned.ipa";
-zip -qr "${wdir}/${outfile}" "Payload";
+if [[ -d "${package}/BCSymbolMaps" ]] ; then
+    zip -qr "${wdir}/${outfile}" "Payload" "BCSymbolMaps";
+else
+    zip -qr "${wdir}/${outfile}" "Payload";
+fi
 
 rm -rf "$package";
 
