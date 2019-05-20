@@ -151,7 +151,7 @@ echo "Re sign $app...";
 #/usr/bin/codesign -f -s "$codesignIdentity" --resource-roles="$app/ResourceRules.plist" "$app";
 /usr/bin/codesign -f --entitlements "${package}/entitlements.plist" --timestamp=none -s "$codesignIdentity" "$app";
 
-echo "Re archving app $app to $name_resigned.ipa...";
+echo "Re archving app $app to ${outfile}...";
 cd "$package"; #not sure how to STOP inculding parent folders in the zip path, so cd into the folder first
 echo "${wdir}/${name}_resigned.ipa";
 if [[ -d "${package}/BCSymbolMaps" ]] ; then
