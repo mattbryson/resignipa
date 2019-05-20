@@ -96,6 +96,10 @@ rm -r "$app/_CodeSignature" "$app/CodeResources" 2> /dev/null | true;
 echo "Adding new profile to $app...";
 cp "$profile" "$app/embedded.mobileprovision";
 
+echo "Create entitlements.plist...";
+/usr/libexec/PlistBuddy -x -c 'Print :Entitlements' /dev/stdin <<< $(security cms -D -i "$profile") > "${package}/entitlements.plist"
+/usr/libexec/PlistBuddy -c 'Delete :com.apple.developer.associated-domains' "${package}/entitlements.plist"
+
 buildPlist="$app/$plist";
 
 if [[ -z $bundleVersion ]]; then
@@ -144,12 +148,17 @@ fi
 
 
 echo "Re sign $app...";
-/usr/bin/codesign -f -s "$codesignIdentity" --resource-rules "$app/ResourceRules.plist" "$app";
+#/usr/bin/codesign -f -s "$codesignIdentity" --resource-roles="$app/ResourceRules.plist" "$app";
+/usr/bin/codesign -f --entitlements "${package}/entitlements.plist" --timestamp=none -s "$codesignIdentity" "$app";
 
-echo "Re archving app $app to $name_resigned.ipa...";
+echo "Re archving app $app to ${outfile}...";
 cd "$package"; #not sure how to STOP inculding parent folders in the zip path, so cd into the folder first
 echo "${wdir}/${name}_resigned.ipa";
-zip -qr "${wdir}/${outfile}" "Payload";
+if [[ -d "${package}/BCSymbolMaps" ]] ; then
+    zip -qr "${wdir}/${outfile}" "Payload" "BCSymbolMaps";
+else
+    zip -qr "${wdir}/${outfile}" "Payload";
+fi
 
 rm -rf "$package";
 
